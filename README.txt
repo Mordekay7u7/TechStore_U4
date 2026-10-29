@@ -24,6 +24,12 @@ techstore-u4/
 ├── tests/                  # Suite de pruebas automáticas con pytest
 │   ├── test_domain.py
 │   └── test_api.py
+├── docs/                  # Suite de pruebas automáticas con pytest
+│   ├── bitacora
+│   ├── diagramas
+│   ├── Domain events  
+│   └── Reporte
+│
 ├── cargar_csv.py           # Cargador de fixtures de datos en memoria
 ├── README.md               # Documentación del proyecto
 └── .gitignore              # Archivos excluidos del control de versiones
