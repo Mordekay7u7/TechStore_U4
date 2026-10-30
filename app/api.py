@@ -103,4 +103,4 @@ def cancel_order(order_id: str, reason: str):
     except InvalidOrderData as exc:
         raise HTTPException(status_code=422, detail=str(exc))
         
-    return {"id": order.id, "status": order.status.value}
+    return {"id": order.id, "status": order.status.value, "reason" : reason}

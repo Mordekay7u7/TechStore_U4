@@ -48,11 +48,11 @@ class OrderItem:
 
 class OrderStatus(str, Enum):
     DRAFT = "DRAFT"
-    CONFIRMED = "CONFIRMED"
-    SHIPPED = "SHIPPED"
-    DELIVERED = "DELIVERED"
-    CANCELLED = "CANCELLED"
-    RETURNED = "RETURNED"
+    CONFIRMED = "CONFIRMADO"
+    SHIPPED = "ENVIADO"
+    DELIVERED = "ENTREGADO"
+    CANCELLED = "CENCELADO"
+    RETURNED = "DEVUELTO"
 
 
 # Se coloca DomainEvent aquí arriba para que la clase Order pueda usarlo
@@ -95,7 +95,7 @@ class Order:
     # TODOS LOS MÉTODOS A CONTINUACIÓN DEBEN ESTAR DENTRO DE LA CLASE ORDER
     def confirm(self):
         if self.status != OrderStatus.DRAFT:
-            raise InvalidOrderTransition("Solo DRAFT")
+            raise InvalidOrderTransition("Ya confirmada, continue con el envio")
         if not self.items or not self.customer.active:
             raise InvalidOrderData("Requiere artículos y cliente activo")
         self.status = OrderStatus.CONFIRMED
@@ -103,7 +103,7 @@ class Order:
 
     def ship(self, tracking_number: str):
         if self.status != OrderStatus.CONFIRMED:
-            raise InvalidOrderTransition("Solo pedidos CONFIRMED pueden ser enviados")
+            raise InvalidOrderTransition("Solo pedidos CONFIRMADOS pueden ser enviados")
         if not tracking_number or not tracking_number.strip():
             raise InvalidOrderData("La guía de envío no puede estar vacía")
             
@@ -112,7 +112,7 @@ class Order:
 
     def cancel(self, reason: str):
         if self.status != OrderStatus.CONFIRMED:
-            raise InvalidOrderTransition("Solo pedidos CONFIRMED pueden ser cancelados")
+            raise InvalidOrderTransition("Solo pedidos CONFIRMADOS pueden ser cancelados")
         if not reason or not reason.strip():
             raise InvalidOrderData("El motivo de cancelación no puede estar vacío")
             
@@ -121,14 +121,14 @@ class Order:
 
     def deliver(self):
         if self.status != OrderStatus.SHIPPED:
-            raise InvalidOrderTransition("Solo pedidos SHIPPED pueden ser entregados")
+            raise InvalidOrderTransition("Solo pedidos ENVIADOS pueden ser entregados")
             
         self.status = OrderStatus.DELIVERED
         self.events.append(DomainEvent("OrderDelivered", self.id))
 
     def return_order(self):
         if self.status != OrderStatus.SHIPPED:
-            raise InvalidOrderTransition("Solo pedidos SHIPPED pueden ser devueltos")
+            raise InvalidOrderTransition("Solo pedidos ENVIADOS pueden ser devueltos")
             
         self.status = OrderStatus.RETURNED
         self.events.append(DomainEvent("OrderReturned", self.id))
